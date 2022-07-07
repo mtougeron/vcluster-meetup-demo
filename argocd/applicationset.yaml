@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: vcluster-env
+spec:
+  generators:
+    - pullRequest:
+        github:
+          owner: mtougeron
+          repo: vcluster-meetup-demo
+  template:
+    metadata:
+      name: 'vcluster-env-{{branch}}-{{number}}'
+    spec:
+      source:
+        repoURL: 'https://github.com/mtougeron/vcluster-meetup-demo.git'
+        targetRevision: '{{head_sha}}'
+        path: apps/vcluster-env
+        helm:
+          parameters:
+          - name: cluster_name
+            value: vcluster-meetup-demo-pr-{{number}}
+      project: default
+      destination:
+        name: in-cluster
+        namespace: vcluster
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
