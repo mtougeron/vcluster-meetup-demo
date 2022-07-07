@@ -1,0 +1,56 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: vc-{{.Values.cluster_name}}
+spec:
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+    kind: VCluster
+    name: vc-{{.Values.cluster_name}}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
+kind: VCluster
+metadata:
+  name: vc-{{.Values.cluster_name}}
+spec:
+  controlPlaneEndpoint:
+    host: "{{if .Values.ingress_class}}vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}{{end}}"
+    port: 0
+  helmRelease:
+    chart:
+      name: {{.Values.chart_name}}
+      repo: {{.Values.chart_repo}}
+      version: {{.Values.chart_version}}
+    values: |
+{{if .Values.ingress_class}}
+      syncer:
+        extraArgs:
+          - --tls-san=vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}
+{{end}}
+      securityContext:
+        runAsUser: 12345
+        runAsNonRoot: true
+      sync:
+        storageclasses:
+          enabled: false
+        legacy-storageclasses:
+          enabled: true
+  kubernetesVersion: "{{.Values.kubernetes_version}}"
+{{if .Values.ingress_class}}
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: "{{.Values.ingress_class}}"
+  name: vc-{{.Values.cluster_name}}
+spec:
+  virtualhost:
+    fqdn: vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}
+    tls:
+      passthrough: true
+  tcpproxy:
+    services:
+    - name: vc-{{.Values.cluster_name}}
+      port: 443
+{{end}}
