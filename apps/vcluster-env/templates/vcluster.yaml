@@ -41,9 +41,9 @@ spec:
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
+  name: vc-{{.Values.cluster_name}}
   annotations:
     kubernetes.io/ingress.class: "{{.Values.ingress_class}}"
-  name: vc-{{.Values.cluster_name}}
 spec:
   virtualhost:
     fqdn: vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}
