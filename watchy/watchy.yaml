@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: watchy
+  labels:
+    app.kubernetes.io/name: watchy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: watchy
+subjects:
+- kind: ServiceAccount
+  name: watchy
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: watchy
+  labels:
+    app.kubernetes.io/name: watchy
+spec:
+  serviceName: watchy
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: watchy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: watchy
+      annotations:
+        kubectl.kubernetes.io/default-container: watchy
+    spec:
+      serviceAccountName: watchy
+      initContainers:
+      - name: kubeconfig
+        image: bitnami/kubectl:1.22
+        command:
+        - sh
+        - -c
+        - >
+          kubectl config set-cluster in-cluster --server=https://$(KUBERNETES_SERVICE_HOST) --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt --embed-certs=true ;
+          kubectl config set-credentials watchy --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) ;
+          kubectl config set-context in-cluster --cluster in-cluster --user watchy ;
+          kubectl config use-context in-cluster ;
+        env:
+          - name: KUBECONFIG
+            value: /kubeconfig/kubeconfig.yaml
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: "/kubeconfig"
+      containers:
+      - name: watchy
+        image: evanfoster/secret-watchy:latest
+        imagePullPolicy: IfNotPresent
+        command: [sleep]
+        args:
+        - "1000000"
+        env:
+          - name: KUBECONFIG
+            value: /kubeconfig/kubeconfig.yaml
+        volumeMounts:
+        - mountPath: "/kubeconfig"
+          name: kubeconfig
+      volumes:
+      - name: kubeconfig
+        emptyDir: {}
