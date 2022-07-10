@@ -1,0 +1,5 @@
+cluster_type: "eks"
+cluster_name: "vcluster-meetup"
+ssh_keyname: "default"
+region: "us-east-1"
+allowed_cidr_block: []

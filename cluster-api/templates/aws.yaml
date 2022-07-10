@@ -1,0 +1,155 @@
+{{if eq .Values.cluster_type "aws" }}
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: {{.Values.cluster_name}}
+spec:
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: {{.Values.cluster_name}}-control-plane
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: AWSCluster
+    name: {{.Values.cluster_name}}
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSCluster
+metadata:
+  name: {{.Values.cluster_name}}
+spec:
+  region: {{.Values.region}}
+  sshKeyName: {{.Values.ssh_keyname}}
+  controlPlaneLoadBalancer:
+    scheme: internal
+  bastion:
+    enabled: true
+{{- if .Values.allowed_cidr_block }}
+    allowedCIDRBlocks:
+{{- .Values.allowed_cidr_block | toYaml | nindent 4 }}
+{{- end}}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: {{.Values.cluster_name}}-control-plane
+spec:
+  kubeadmConfigSpec:
+    clusterConfiguration:
+      controllerManager:
+        extraArgs:
+          cloud-provider: aws
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: aws
+        name: '{{`{{ ds.meta_data.local_hostname }}`}}'
+    joinConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: aws
+        name: '{{`{{ ds.meta_data.local_hostname }}`}}'
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      kind: AWSMachineTemplate
+      name: {{.Values.cluster_name}}-control-plane
+  replicas: 3
+  version: v1.24.2
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSMachineTemplate
+metadata:
+  name: {{.Values.cluster_name}}-control-plane
+spec:
+  template:
+    spec:
+      iamInstanceProfile: control-plane.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: m5.xlarge
+      rootVolume:
+        size: 50
+        encrypted: true
+        type: gp3
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: {{.Values.cluster_name}}-az1
+spec:
+  clusterName: {{.Values.cluster_name}}
+  replicas: 1
+  selector:
+    matchLabels: null
+  template:
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: {{.Values.cluster_name}}-kubeadm
+      clusterName: {{.Values.cluster_name}}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: AWSMachineTemplate
+        name: {{.Values.cluster_name}}-az1
+      version: v1.24.2
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: {{.Values.cluster_name}}-az2
+spec:
+  clusterName: {{.Values.cluster_name}}
+  replicas: 1
+  selector:
+    matchLabels: null
+  template:
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: {{.Values.cluster_name}}-kubeadm
+      clusterName: {{.Values.cluster_name}}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: AWSMachineTemplate
+        name: {{.Values.cluster_name}}-az2
+      version: v1.24.2
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: MachineDeployment
+metadata:
+  name: {{.Values.cluster_name}}-az3
+spec:
+  clusterName: {{.Values.cluster_name}}
+  replicas: 1
+  selector:
+    matchLabels: null
+  template:
+    spec:
+      bootstrap:
+        configRef:
+          apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+          kind: KubeadmConfigTemplate
+          name: {{.Values.cluster_name}}-kubeadm
+      clusterName: {{.Values.cluster_name}}
+      infrastructureRef:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: AWSMachineTemplate
+        name: {{.Values.cluster_name}}-az3
+      version: v1.24.2
+---
+apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+kind: KubeadmConfigTemplate
+metadata:
+  name: {{.Values.cluster_name}}-kubeadm
+spec:
+  template:
+    spec:
+      joinConfiguration:
+        nodeRegistration:
+          kubeletExtraArgs:
+            cloud-provider: aws
+          name: '{{`{{ ds.meta_data.local_hostname }}`}}'
+{{end}}

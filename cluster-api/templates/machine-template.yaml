@@ -1,0 +1,54 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSMachineTemplate
+metadata:
+  name: {{.Values.cluster_name}}-az1
+spec:
+  template:
+    spec:
+      failureDomain: "{{.Values.region}}a"
+      rootVolume:
+        encrypted: true
+        size: 50
+        type: gp3
+      iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: c5.4xlarge
+      sshKeyName: {{.Values.ssh_keyname}}
+      spotMarketOptions:
+        maxPrice: "0.60"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSMachineTemplate
+metadata:
+  name: {{.Values.cluster_name}}-az2
+spec:
+  template:
+    spec:
+      failureDomain: "{{.Values.region}}b"
+      rootVolume:
+        encrypted: true
+        size: 50
+        type: gp3
+      iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: c5.4xlarge
+      sshKeyName: {{.Values.ssh_keyname}}
+      spotMarketOptions:
+        maxPrice: "0.60"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: AWSMachineTemplate
+metadata:
+  name: {{.Values.cluster_name}}-az3
+spec:
+  template:
+    spec:
+      failureDomain: "{{.Values.region}}c"
+      rootVolume:
+        encrypted: true
+        size: 50
+        type: gp3
+      iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: c5.4xlarge
+      sshKeyName: {{.Values.ssh_keyname}}
+      spotMarketOptions:
+        maxPrice: "0.60"

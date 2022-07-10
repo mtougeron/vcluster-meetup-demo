@@ -9,6 +9,7 @@ The demo stuff for the [loft.sh vcluster meetup](https://www.meetup.com/loft-mee
 - [vcluster](https://www.vcluster.com/)
 - [cluster-api](https://cluster-api.sigs.k8s.io/)
 - [cluster-api-provider-vcluster](https://github.com/loft-sh/cluster-api-provider-vcluster)
+- [Quick-start guide to build a AWS/EKS cluster](./cluster-api/README.md)
 - [Argo CD](https://argoproj.github.io/cd/)
 
 ### View the presentation slides
@@ -23,6 +24,7 @@ TBD hopefully there is a recording... if not, make one...
 
 Warning: Thar be dragons here until I clean this up before the meetup...
 
+1. If you need to build a Kubernetes cluster, [follow this quick-start guide](./cluster-api/README.md)
 1. [Install clusterctl](https://cluster-api.sigs.k8s.io/user/quick-start.html#install-clusterctl)
 1. Modify `~/.cluster-api/clusterctl.yaml` and add the vcluster provider
     ```yaml
