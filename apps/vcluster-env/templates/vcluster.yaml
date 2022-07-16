@@ -15,7 +15,7 @@ metadata:
 spec:
   controlPlaneEndpoint:
     host: "{{if .Values.ingress_class}}vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}{{end}}"
-    port: 443
+    port: {{if .Values.ingress_class}}443{{else}}0{{end}}
   helmRelease:
     chart:
       name: {{.Values.chart_name}}
