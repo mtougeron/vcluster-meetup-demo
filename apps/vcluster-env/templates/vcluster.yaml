@@ -14,8 +14,8 @@ metadata:
   name: vc-{{.Values.cluster_name}}
 spec:
   controlPlaneEndpoint:
-    host: "{{if .Values.ingress_class}}vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}{{end}}"
-    port: {{if .Values.ingress_class}}443{{else}}0{{end}}
+    host: "{{if .Values.ingress.base_domain_name}}vc-{{.Values.cluster_name}}.{{.Values.ingress.base_domain_name}}{{end}}"
+    port: {{if .Values.ingress.base_domain_name}}443{{else}}0{{end}}
   helmRelease:
     chart:
       name: {{.Values.chart_name}}
@@ -23,10 +23,10 @@ spec:
       version: {{.Values.chart_version}}
     values: |
       serviceCIDR: "{{.Values.serviceCIDR}}"
-{{if .Values.ingress_class}}
+{{if .Values.ingress.base_domain_name}}
       syncer:
         extraArgs:
-          - --tls-san=vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}
+          - --tls-san=vc-{{.Values.cluster_name}}.{{.Values.ingress.base_domain_name}}
 {{end}}
       securityContext:
         runAsUser: 12345
@@ -37,21 +37,56 @@ spec:
         legacy-storageclasses:
           enabled: true
   kubernetesVersion: "{{.Values.kubernetes_version}}"
-{{if .Values.ingress_class}}
+{{if .Values.ingress.base_domain_name}}
+{{if eq .Values.ingress.kind "HTTPProxy" }}
 ---
 apiVersion: projectcontour.io/v1
 kind: HTTPProxy
 metadata:
+{{if or .Values.ingress.annotations .Values.ingress.class}}
   annotations:
-    kubernetes.io/ingress.class: "{{.Values.ingress_class}}"
+{{end}}
+{{if .Values.ingress.class}}
+    kubernetes.io/ingress.class: {{.Values.ingress.class}}
+{{end}}
+{{if .Values.ingress.annotations}}
+{{.Values.ingress.annotations | toYaml | nindent 4}}
+{{end}}
   name: vc-{{.Values.cluster_name}}
 spec:
   virtualhost:
-    fqdn: vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}
+    fqdn: vc-{{.Values.cluster_name}}.{{.Values.ingress.base_domain_name}}
     tls:
       passthrough: true
   tcpproxy:
     services:
     - name: vc-{{.Values.cluster_name}}
       port: 443
+{{else}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+{{if or .Values.ingress.annotations .Values.ingress.class}}
+  annotations:
+{{end}}
+{{if .Values.ingress.class}}
+    kubernetes.io/ingress.class: {{.Values.ingress.class}}
+{{end}}
+{{if .Values.ingress.annotations}}
+{{.Values.ingress.annotations | toYaml | nindent 4}}
+{{end}}
+  name: vc-{{.Values.cluster_name}}
+spec:
+  rules:
+  - host: vc-{{.Values.cluster_name}}.{{.Values.ingress.base_domain_name}}
+    http:
+      paths:
+      - backend:
+          service:
+            name: vc-{{.Values.cluster_name}}
+            port: 
+              number: 443
+        path: /
+        pathType: ImplementationSpecific
+{{end}}
 {{end}}
