@@ -10,7 +10,7 @@ spec:
           repo: vcluster-meetup-demo
   template:
     metadata:
-      name: 'vcluster-env-{{branch}}-{{number}}'
+      name: 'vcluster-env--{{branch}}--pr-{{number}}'
     spec:
       source:
         repoURL: 'https://github.com/mtougeron/vcluster-meetup-demo.git'

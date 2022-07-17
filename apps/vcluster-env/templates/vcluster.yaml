@@ -2,6 +2,8 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: Cluster
 metadata:
   name: vc-{{.Values.cluster_name}}
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   infrastructureRef:
     apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
@@ -12,6 +14,8 @@ apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1
 kind: VCluster
 metadata:
   name: vc-{{.Values.cluster_name}}
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   controlPlaneEndpoint:
     host: "{{if .Values.ingress_class}}vc-{{.Values.cluster_name}}.{{.Values.base_domain_name}}{{end}}"
@@ -43,6 +47,7 @@ kind: HTTPProxy
 metadata:
   annotations:
     kubernetes.io/ingress.class: "{{.Values.ingress_class}}"
+    argocd.argoproj.io/sync-wave: "2"
   name: vc-{{.Values.cluster_name}}
 spec:
   virtualhost:
