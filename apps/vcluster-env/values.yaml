@@ -1,7 +1,7 @@
 cluster_name: ""
 base_domain_name: ""
 ingress_class: ""
-chart_name: "null"
+chart_name: "vcluster-k8s"
 chart_repo: "null"
 chart_version: "null"
 kubernetes_version: "1.21.11"
