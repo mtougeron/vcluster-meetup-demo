@@ -22,6 +22,7 @@ spec:
       repo: {{.Values.chart_repo}}
       version: {{.Values.chart_version}}
     values: |
+      serviceCIDR: "{{.Values.serviceCIDR}}"
 {{if .Values.ingress_class}}
       syncer:
         extraArgs:
