@@ -20,7 +20,7 @@ spec:
           parameters:
           - name: cluster_name
             value: vcluster-meetup-demo-pr-{{number}}
-      project: default
+      project: vcluster
       destination:
         name: in-cluster
         namespace: vcluster
