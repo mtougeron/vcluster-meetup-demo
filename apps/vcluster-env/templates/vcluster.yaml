@@ -63,6 +63,7 @@ spec:
     - name: vc-{{.Values.cluster_name}}
       port: 443
 {{else}}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
