@@ -14,15 +14,16 @@ The demo stuff for the [loft.sh vcluster meetup](https://www.meetup.com/loft-mee
 
 ### View the presentation slides
 
-TBD slide link goes here when they are finished...
+Slides: [One, Two, Green & Blue; See The Ways Vcluster Can Work For You](One_Two_Green_Blue_See_The_Ways_Vcluster_Can_Work_For_You.pdf) but the demo in the video or the code described below is really the interesting stuff...
 
 ### View the recording
 
-TBD hopefully there is a recording... if not, make one...
+- [Recording (starting at 1:09:00)](https://youtu.be/dtnU9aGmh0M?t=4147)
+- [Full recording of event](https://youtu.be/dtnU9aGmh0M)
 
 ## Quick & dirty steps for how to run this demo
 
-Warning: Thar be dragons here until I clean this up before the meetup...
+Warning: Thar might be dragons here... I always recommend understanding what you're doing rather than blindly copy/pasting commands...
 
 1. If you need to build a Kubernetes cluster, [follow this quick-start guide](./cluster-api/README.md)
 1. [Install clusterctl](https://cluster-api.sigs.k8s.io/user/quick-start.html#install-clusterctl)
@@ -37,7 +38,7 @@ Warning: Thar be dragons here until I clean this up before the meetup...
 1. [Install Argo CD](https://argoproj.github.io/cd/) on the cluster
 1. Initialize cluster-api `clusterctl init --infrastructure vcluster`
 1. Create a namespace to run in `kubectl create ns vcluster`
-1. Fork this repo so you make modifications and test out the process
+1. Fork this repo so you can make modifications and test out the process
 1. Take the `argocd/applicationset.yaml` and modify to set any helm values as appropriate. e.g., set the `base_domain_name` and `ingress_class` if you want (I prefer to use some form of ingress over `vcluster connect`)
     - NOTE: If you don't use Contour for your ingress, you'll want to change from `HTTPProxy` to your ingress object of choice for the helm chart.
     - Be sure to update the `Chart.yaml` with a new version number with each change
