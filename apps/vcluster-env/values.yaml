@@ -8,7 +8,7 @@ chart_name: "vcluster-k8s"
 # chart_name: "vcluster-k3s"
 chart_repo: "null"
 chart_version: "null"
-kubernetes_version: "1.25.2"
+kubernetes_version: "1.24"
 serviceCIDR: "192.168.0.0/16"
 service:
   type: "LoadBalancer"
