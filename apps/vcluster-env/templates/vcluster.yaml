@@ -28,6 +28,23 @@ spec:
         extraArgs:
           - --tls-san=vc-{{.Values.cluster_name}}.{{.Values.ingress.base_domain_name}}
 {{end}}
+      {{- if .Values.service.type }}
+      service:
+        type: {{.Values.service.type }}
+        {{- if .Values.service.loadBalancerSourceRanges }}
+        loadBalancerSourceRanges:
+          {{- range $f := .Values.service.loadBalancerSourceRanges }}
+          - "{{ $f }}"
+          {{- end }}
+        {{- end }}
+        {{- if .Values.service.loadBalancerSourceRangesString }}
+        {{ $parts := splitList "," .Values.service.loadBalancerSourceRangesString }}
+        loadBalancerSourceRanges:
+          {{- range $f := $parts }}
+          - "{{ $f }}"
+          {{- end }}
+        {{- end }}
+      {{- end }}
       securityContext:
         runAsUser: 12345
         runAsNonRoot: true
