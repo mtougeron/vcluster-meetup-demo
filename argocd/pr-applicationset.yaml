@@ -28,3 +28,7 @@ spec:
         automated:
           prune: true
           selfHeal: true
+      ignoreDifferences:
+        - jsonPointers:
+            - /controlPlaneEndpoint
+          kind: VCluster
