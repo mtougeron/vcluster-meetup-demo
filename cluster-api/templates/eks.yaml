@@ -32,7 +32,7 @@ spec:
   - "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   region: {{.Values.region}}
   sshKeyName: {{.Values.ssh_keyname}}
-  version: v1.22
+  version: {{.Values.k8s_version}}
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: EKSConfigTemplate
@@ -62,7 +62,7 @@ spec:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: AWSMachineTemplate
         name: {{.Values.cluster_name}}-az1
-      version: v1.22.10
+      version: {{.Values.k8s_version}}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -85,7 +85,7 @@ spec:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: AWSMachineTemplate
         name: {{.Values.cluster_name}}-az2
-      version: v1.22.10
+      version: {{.Values.k8s_version}}
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
@@ -108,5 +108,5 @@ spec:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
         kind: AWSMachineTemplate
         name: {{.Values.cluster_name}}-az3
-      version: v1.22.10
+      version: {{.Values.k8s_version}}
 {{end}}

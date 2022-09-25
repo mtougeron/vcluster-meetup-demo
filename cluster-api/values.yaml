@@ -1,5 +1,7 @@
 cluster_type: "eks"
 cluster_name: "vcluster-meetup"
 ssh_keyname: "default"
-region: "us-east-1"
+region: "us-west-2"
 allowed_cidr_block: []
+k8s_version: "1.23.7"
+instance_type: "t2.micro"

@@ -12,7 +12,7 @@ spec:
         size: 50
         type: gp3
       iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
-      instanceType: c5.4xlarge
+      instanceType: {{.Values.instance_type}}
       sshKeyName: {{.Values.ssh_keyname}}
       spotMarketOptions:
         maxPrice: "0.60"
@@ -30,7 +30,7 @@ spec:
         size: 50
         type: gp3
       iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
-      instanceType: c5.4xlarge
+      instanceType: {{.Values.instance_type}}
       sshKeyName: {{.Values.ssh_keyname}}
       spotMarketOptions:
         maxPrice: "0.60"
@@ -48,7 +48,7 @@ spec:
         size: 50
         type: gp3
       iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
-      instanceType: c5.4xlarge
+      instanceType: {{.Values.instance_type}}
       sshKeyName: {{.Values.ssh_keyname}}
       spotMarketOptions:
         maxPrice: "0.60"
