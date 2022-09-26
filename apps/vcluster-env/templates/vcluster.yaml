@@ -2,6 +2,8 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: Cluster
 metadata:
   name: vc-{{.Values.cluster_name}}
+  labels:
+    name: vc-{{.Values.cluster_name}}
 spec:
   infrastructureRef:
     apiVersion: infrastructure.cluster.x-k8s.io/v1alpha1

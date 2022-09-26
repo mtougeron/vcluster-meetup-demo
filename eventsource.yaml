@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: vcluster-deletion
+  namespace: argo
+spec:
+  template:
+    serviceAccountName: argocd-workflow
+  resource:
+    example:
+      # namespace to listen events within
+      namespace: vcluster
+      # resource group
+      group: cluster.x-k8s.io
+      # resource version
+      version: v1beta1
+      # resource kind
+      resource: clusters
+      # type of events
+      # possible values are ADD, DELETE, UPDATE
+      # Optional
+      eventTypes:
+        - DELETE
+      # optional.
+      filter:
+        # This indicates only watch the events happened after the service start time.
+        afterStart: true

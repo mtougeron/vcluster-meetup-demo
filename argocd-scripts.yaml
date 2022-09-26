@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: argocd-scripts-{{.Values.cluster_name}}
+  name: argocd-scripts
   namespace: argo
 data:
   add-to-argocd.sh: |
@@ -14,9 +14,9 @@ data:
     cluster=$1
     while [ -z "$cluster_ready" ]
     do
-        sleep 10
-        kubectl get cluster $cluster -n {{.Release.Namespace}}
-        cluster_ready=$(kubectl get cluster $cluster -o json -n {{.Release.Namespace}} | jq -r '. | select(.status.phase=="Provisioned")')
+        sleep 20
+        kubectl get cluster $cluster -n vcluster
+        cluster_ready=$(kubectl get cluster $cluster -o json -n vcluster | jq -r '. | select(.status.phase=="Provisioned")')
     done
 
     # Not sure why in-cluster config isn't working for clusterctl so hacking the kubeconfig...
@@ -25,13 +25,16 @@ data:
     kubectl config set-context in-cluster --cluster in-cluster --user clusterctl --namespace argocd ;
     kubectl config use-context in-cluster ;
 
-    clusterctl get kubeconfig $cluster -n {{.Release.Namespace}} > $HOME/kubeconfig.yaml
+    clusterctl get kubeconfig $cluster -n vcluster > $HOME/kubeconfig.yaml
     export KUBECONFIG="$HOME/.kube/config:$HOME/kubeconfig.yaml"
 
     kubectl config set-context $cluster --cluster my-vcluster --user my-vcluster
     argocd cluster add $cluster --label provider=vcluster -y --upsert
-  delete-from-argocd.sh: |
+
+  remove-from-argocd.sh: |
     #!/bin/sh
+
+    cluster=$1
 
     argocd login argocd-server.argocd.svc.cluster.local --core --insecure --plaintext --grpc-web --username $USERNAME --password $PASSWORD
 
@@ -41,8 +44,8 @@ data:
     kubectl config set-context in-cluster --cluster in-cluster --user clusterctl --namespace argocd ;
     kubectl config use-context in-cluster ;
 
-    clusterctl get kubeconfig $cluster -n {{.Release.Namespace}} > $HOME/kubeconfig.yaml
+    clusterctl get kubeconfig $cluster -n vcluster > $HOME/kubeconfig.yaml
     export KUBECONFIG="$HOME/.kube/config:$HOME/kubeconfig.yaml"
 
     kubectl config set-context $cluster --cluster my-vcluster --user my-vcluster
-    aargocd cluster rm vc-test1 -y
+    argocd cluster rm $cluster
