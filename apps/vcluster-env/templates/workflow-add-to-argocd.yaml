@@ -35,5 +35,5 @@ spec:
       volumes:
       - name: argocd-scripts
         configMap:
-          name: argocd-scripts-{{.Values.cluster_name}}
+          name: argocd-scripts
           defaultMode: 0777
