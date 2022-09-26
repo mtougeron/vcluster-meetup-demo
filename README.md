@@ -1,6 +1,6 @@
 # vcluster-meetup-demo
 
-The demo stuff for the [loft.sh vcluster meetup](https://www.meetup.com/loft-meetup-san-francisco/events/286690864/) on July 26th, 2022.
+The demo stuff for the [loft.sh vcluster meetup](https://www.meetup.com/loft-meetup-san-francisco/events/286690864/) on Sept 26th, 2022.
 
 ## Links
 
